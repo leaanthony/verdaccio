@@ -11,7 +11,7 @@ const getSize = (size: string) => {
     case 'md':
       return `
         width: 20px;
-        height: 18px;
+        height: auto;
       `;
     default:
       return `
