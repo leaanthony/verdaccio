@@ -24,15 +24,15 @@ export const InnerNavBar = styled(Toolbar)`
   && {
     justify-content: space-between;
     align-items: center;
-    padding: 0 20px;
+    padding: 0 15px;
     ${mq.medium(css`
-      min-width: 400px;
       max-width: 800px;
-      width: 100%;
-      margin: auto;
     `)};
     ${mq.large(css`
       max-width: 1240px;
+      padding: 0 20px;
+      width: 100%;
+      margin: auto;
     `)};
   }
 `;
