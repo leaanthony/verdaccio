@@ -1,62 +1,80 @@
+/**
+ * @prettier
+ * @flow
+ */
+
 import React from 'react';
-import PropTypes from 'prop-types';
-import Chip from '@material-ui/core/Chip';
-import { Link } from 'react-router-dom';
+import type { Element } from 'react';
+import { margin } from 'polished';
 
-import { formatDateDistance } from '../../utils/package';
+import Tag from '../Tag';
+import { formatDate, formatDateDistance } from '../../utils/package';
 
-import classes from './package.scss';
+import { IProps } from './types';
+import { Wrapper, Header, A, Name, Version, Overview, Published, Time, Text, Description, Avatar, Author, Field, Content, Footer } from './styles';
 
-const Package = ({ name, version, author, description, license, time, keywords }) => {
-  return (<section className={classes.package}>
-    <Link to={`detail/${name}`}>
-      <div className={classes.header}>
-        <div className={classes.title}>
-          <h1>
-            {name} <Chip label={`v${version}`} />
-          </h1>
-        </div>
-        <div role="author" className={classes.author}>
-          {author ? `By: ${author}` : ''}
-        </div>
-      </div>
-      <div className={classes.footer}>
-        <p className={classes.description}>
-          {description}
-        </p>
-      </div>
-      <div className={classes.tags}>
-        {keywords && keywords.map((keyword, index) => (
-          <Chip
-            key={index}
-            label={keyword}
-            className={classes.tag}
-          />
-        ))}
-      </div>
-      <div className={classes.details}>
-        <div className={classes.homepage}>
-          {time ? `Published ${formatDateDistance(time)} ago` : ''}
-        </div>
-        <div className={classes.license}>
-          {license}
-        </div>
-      </div>
-    </Link>
-  </section>);
+const getInitialsName = (name: string) =>
+  name
+    .split(' ')
+    .reduce((accumulator, currentValue) => accumulator.charAt(0) + currentValue.charAt(0), '')
+    .toUpperCase();
+
+const Package = ({ label, version, time, author: { name, avatar, email }, description, keywords }: IProps): Element<Wrapper> => {
+  const publisher = name || 'Anonymous';
+  return (
+    <Wrapper>
+      <Header>
+        <A to={`detail/${label}`}>
+          <Name>{label}</Name>
+          {version && <Version>{`${version} version`}</Version>}
+        </A>
+        <Overview>
+          <Published>
+            <Time />
+            {`Published on ${formatDate(time)} • ${formatDateDistance(time)} ago`}
+          </Published>
+        </Overview>
+      </Header>
+      <Content>
+        <Field>
+          <Text text="Author" modifiers={margin('0px', '0px', '5px', '0px')} />
+          <Author>
+            <Avatar alt={publisher} src={avatar}>
+              {!avatar && publisher && getInitialsName(publisher)}
+            </Avatar>
+            <Description>
+              <Text text={publisher} weight="bold" />
+              {email && <Text text={email} />}
+            </Description>
+          </Author>
+        </Field>
+        {description && (
+          <Field>
+            <Text text="Description" modifiers={margin('0px', '0px', '5px', '0px')} />
+            <span>{description}</span>
+          </Field>
+        )}
+      </Content>
+      {keywords.length > 0 && (
+        <Footer>
+          {keywords.map((keyword, index) => (
+            <Tag key={index}>{keyword}</Tag>
+          ))}
+        </Footer>
+      )}
+    </Wrapper>
+  );
 };
 
-Package.propTypes = {
-  name: PropTypes.string,
-  version: PropTypes.string,
-  author: PropTypes.string,
-  description: PropTypes.string,
-  keywords: PropTypes.array,
-  license: PropTypes.string,
-  time: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.instanceOf(Date)
-  ])
+Package.defaultProps = {
+  author: {
+    name: '',
+    avatar: '',
+    email: '',
+    url: '',
+  },
+  description: '',
+  keywords: [],
 };
 
 export default Package;
