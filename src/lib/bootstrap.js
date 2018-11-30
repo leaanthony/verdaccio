@@ -149,6 +149,14 @@ function handleHTTPS(app, configPath, config) {
         ca: fs.readFileSync(config.https.ca),
       });
     }
+
+    // Client Certificates
+    if (config.https.enforceClientCertificates) {
+      httpsOptions = assign(httpsOptions, {
+        rejectUnauthorized: true,
+        requestCert: true,
+      });
+    }
     return https.createServer(httpsOptions, app);
   } catch (err) { // catch errors related to certificate loading
     logger.logger.fatal({err: err}, 'cannot create server: @{err.message}');
